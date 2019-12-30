@@ -1,6 +1,6 @@
-const map = require('lodash/map')
 const Campaign = require('../models/campaign')
 const client = require('../config/contentful').default
+const map = require('lodash/map')
 
 exports.index = async (req, res, next) => {
   const query = { $or: [
@@ -11,22 +11,16 @@ exports.index = async (req, res, next) => {
   return res.json(campaigns)
 }
 
-// @TODO Generate galaxy
 exports.store = async (req, res, next) => {
   const { items } = await client.getEntries({content_type: 'rebellionSystem'})
   const systems = map(items, (item) => ({
     name: item.fields.name,
-    regions: item.fields.regions,
-    faction: null
+    regions: item.fields.regions
   }))
 
-  const payload = {
-    ...req.body,
-    user: req.user.id,
-    systems: systems,
-  }
+  const campaignData = {...req.body, user: req.user.id, systems: systems }
 
-  Campaign.create(payload, (err, campaign) => {
+  Campaign.create(campaignData, (err, campaign) => {
     if (err) return res.status(422).json(err)
     return res.json(campaign)
   })
