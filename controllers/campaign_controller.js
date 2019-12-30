@@ -1,4 +1,5 @@
 const Campaign = require('../models/campaign')
+const Fleet = require('../models/fleet')
 const client = require('../config/contentful').default
 const map = require('lodash/map')
 
@@ -28,13 +29,14 @@ exports.store = async (req, res, next) => {
 
   const campaign = await Campaign.create(campaignData)
     .catch((err) => res.status(422).json(err))
-  return res.json(campaign)
+  return res.status(201).json(campaign)
 }
 
 exports.show = async (req, res, next) => {
   const campaign = await Campaign.findById(req.params.id)
     .populate('user')
-    .populate('players')
+    .populate('factions.grandAdmiral')
+    .populate('factions.players')
   return res.json(campaign)
 }
 
@@ -46,4 +48,19 @@ exports.update = async (req, res, next) => {
 exports.destroy = async (req, res, next) => {
   await Campaign.findByIdAndDelete(req.params.id)
   return res.status(204).json(null)
+}
+
+exports.storeFleet = (req, res, next) => {
+  const payload = { ...req.body, player: req.user.id, campaign: req.params.id }
+  Fleet.create(payload, (err, fleet) => {
+    if (err) return res.status(422).json(err)
+    return res.status(201).json(fleet)
+  })
+}
+
+exports.showFleets = (req, res, next) => {
+  Fleet.find({ campaign: req.params.id }, (err, fleets) => {
+    if (err) return res.status(500).json(err)
+    return res.json(fleets)
+  })
 }

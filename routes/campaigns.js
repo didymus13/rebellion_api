@@ -13,4 +13,8 @@ router.route('/:id')
   .put((req, res, next) => CampaignController.update(req, res, next))
   .delete((req, res, next) => CampaignController.destroy(req, res, next))
 
+router.route('/:id/fleets')
+  .get((req, res, next) => CampaignController.showFleets(req, res, next))
+  .post((req, res, next) => CampaignController.storeFleet(req, res, next))
+
 module.exports = router
