@@ -5,14 +5,20 @@ const map = require('lodash/map')
 exports.index = async (req, res, next) => {
   const query = { $or: [
     { user: req.user.id },
-    { players: { $in: [req.user.id] } }
+    { factions: { $elemMatch: { grandAdmiral: req.user.id } } },
+    { factions: { $elemMatch: { players: { $in: [req.user.id] } } } }
   ] }
   const campaigns = await Campaign.find(query).sort('-createdAt')
   return res.json(campaigns)
 }
 
 exports.store = async (req, res, next) => {
-  const { items } = await client.getEntries({content_type: 'rebellionSystem'})
+  const { items } = await client.getEntries({
+    content_type: 'rebellionSystem',
+    order: 'sys.createdAt'
+  })
+    .catch((err) => res.status(500).json(err))
+
   const systems = map(items, (item) => ({
     name: item.fields.name,
     regions: item.fields.regions
@@ -20,10 +26,9 @@ exports.store = async (req, res, next) => {
 
   const campaignData = {...req.body, user: req.user.id, systems: systems }
 
-  Campaign.create(campaignData, (err, campaign) => {
-    if (err) return res.status(422).json(err)
-    return res.json(campaign)
-  })
+  const campaign = await Campaign.create(campaignData)
+    .catch((err) => res.status(422).json(err))
+  return res.json(campaign)
 }
 
 exports.show = async (req, res, next) => {
