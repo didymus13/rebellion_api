@@ -7,8 +7,9 @@ var path = require('path');
 var logger = require('morgan');
 const bodyParser = require('body-parser')
 
-var indexRouter = require('./routes/index');
-var authRouter = require('./routes/auth');
+const indexRouter = require('./routes/index')
+const authRouter = require('./routes/auth')
+const campaignRouter = require('./routes/campaigns')
 
 require('./config/database.js')
 require('./config/passport.js')
@@ -23,8 +24,8 @@ app.use(passport.initialize())
 
 // app.use(cookieParser());
 // app.use(express.static(path.join(__dirname, 'public')));
-
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
+app.use('/campaigns', campaignRouter);
 
 module.exports = app;
