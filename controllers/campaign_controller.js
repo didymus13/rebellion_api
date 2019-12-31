@@ -35,8 +35,10 @@ exports.store = async (req, res, next) => {
 exports.show = async (req, res, next) => {
   const campaign = await Campaign.findById(req.params.id)
     .populate('user')
-    .populate('factions.grandAdmiral')
-    .populate('factions.players')
+    .populate('empire.grandAdmiral')
+    .populate('empire.players')
+    .populate('rebels.grandAdmiral')
+    .populate('rebels.players')
   return res.json(campaign)
 }
 
