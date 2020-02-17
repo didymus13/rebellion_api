@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 
 exports.register = (req, res, next) => {
-  User.register(req.body, req.body.password, function(err, user) {
+  User.register({ ...req.body }, req.body.password, function(err, user) {
     if (err) return res.json(err)
     const token = jwt.sign({ sub: user.id }, process.env.APP_KEY)
     return res.json({ token })
