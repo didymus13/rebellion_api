@@ -24,7 +24,7 @@ const AbilitySchema = new Schema({
 const ShipSchema = new Schema({
   isFlagship: { type: Boolean, default: false },
   name: { type: String, required: true },
-  upgrades: [String],
+  upgrades: { type: String },
   points: { type: Number, required: true },
   isVeteran: { type: Boolean, default: false },
   isScarred: { type: Boolean, default: false }
