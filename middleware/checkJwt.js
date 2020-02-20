@@ -1,3 +1,4 @@
+require('dotenv').config()
 const jwt = require('express-jwt');
 const jwtAuthz = require('express-jwt-authz');
 const jwksRsa = require('jwks-rsa');
@@ -13,12 +14,12 @@ const checkJwt = jwt({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: `https://${process.env.AUTH_DOMAIN}/.well-known/jwks.json`
+    jwksUri: `${process.env.AUTH_DOMAIN}/.well-known/jwks.json`
   }),
 
   // Validate the audience and the issuer.
   audience: process.env.AUTH_IDENTIFIER,
-  issuer: `https://${process.env.AUTH_DOMAIN}`,
+  issuer: `${process.env.AUTH_DOMAIN}/`,
   algorithms: ['RS256']
 });
 
