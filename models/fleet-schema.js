@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const ObjectId = mongoose.Schema.Types.ObjectId
-const User = require('./user')
 const Campaign = require('./campaign')
 const sumBy = require('lodash/sumBy')
 
@@ -38,7 +37,7 @@ const SquadronSchema = new Schema({
 })
 
 const FleetSchema = new Schema({
-  player: { type: ObjectId, ref: 'User', required: true, index: true },
+  player: { type: String, required: true, index: true },
   campaign: { type: ObjectId, ref: 'Campaign', required: true, index: true },
   name: { type: String, required: true },
   faction: { type: String, enum: ['empire', 'rebel'], required: true },
@@ -78,4 +77,5 @@ FleetSchema.virtual('total').get(function() {
   return this.shipTotal + this.squadronTotal
 })
 
-module.exports = mongoose.model('Fleet', FleetSchema)
+const Fleet = mongoose.model('Fleet', FleetSchema)
+module.exports = FleetSchema

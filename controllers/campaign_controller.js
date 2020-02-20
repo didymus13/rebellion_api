@@ -1,5 +1,4 @@
 const Campaign = require('../models/campaign')
-const Fleet = require('../models/fleet')
 const client = require('../config/contentful').default
 const map = require('lodash/map')
 
@@ -50,19 +49,4 @@ exports.update = async (req, res, next) => {
 exports.destroy = async (req, res, next) => {
   await Campaign.findByIdAndDelete(req.params.id)
   return res.status(204).json(null)
-}
-
-exports.storeFleet = (req, res, next) => {
-  const payload = { ...req.body, player: req.user.id, campaign: req.params.id }
-  Fleet.create(payload, (err, fleet) => {
-    if (err) return res.status(422).json(err)
-    return res.status(201).json(fleet)
-  })
-}
-
-exports.showFleets = (req, res, next) => {
-  Fleet.find({ campaign: req.params.id }, (err, fleets) => {
-    if (err) return res.status(500).json(err)
-    return res.json(fleets)
-  })
 }

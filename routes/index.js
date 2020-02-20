@@ -1,10 +1,7 @@
-const express = require('express')
-const router = express.Router()
-const passport = require('passport')
+const checkJwt = require('../middleware/checkJwt')
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  return res.json({ name: 'Rebellion API', version: '1.0' })
-});
-
-module.exports = router;
+module.exports = function(app) {
+  app.use('/public', require('./public'))
+  app.use('/private', checkJwt, require('./private'))
+  app.get('/', (req, res) => res.json({ name: 'Rebellion API', version: '1.0' }))
+}

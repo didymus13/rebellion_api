@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const ObjectId = mongoose.Schema.Types.ObjectId
-const User = require('./user')
 const get = require('lodash/get')
+const FleetSchema = require('./fleet-schema')
 
 const PlanetSchema = new Schema({
   name: { type: String, required: true },
@@ -22,8 +22,8 @@ const PlanetSchema = new Schema({
 
 const FactionSchema = new Schema({
   name: { type: String },
-  grandAdmiral: { type: ObjectId, ref: User, index: true },
-  players: [{ type: ObjectId, ref: User, index: true }],
+  grandAdmiral: { type: String, required: true, index: true },
+  players: [{ type: String, required: true, index: true }],
   points: {
     act: { type: Number, default: 0 },
     total: { type: Number, default: 0 }
@@ -36,11 +36,12 @@ const FactionSchema = new Schema({
     resources: { type: Number, default: 0 },
     skilledSpacers: { type: Number, default: 0 },
     spynet: { type: Number, default: 0 }
-  }
+  },
+  fleets: [{ type: FleetSchema }]
 })
 
 const CampaignSchema = new Schema({
-  user: { type: ObjectId, ref: 'User', required: true, index: true },
+  user: { type: String, required: true, index: true },
   name: { type: String, required: true },
   empire: { type: FactionSchema, required: true },
   rebels: { type: FactionSchema, required: true },
