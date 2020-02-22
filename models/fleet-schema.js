@@ -37,7 +37,7 @@ const SquadronSchema = new Schema({
 })
 
 const FleetSchema = new Schema({
-  player: { type: String, required: true, index: true },
+  // player: { type: String, required: true, index: true },
   campaign: { type: ObjectId, ref: 'Campaign', required: true, index: true },
   name: { type: String, required: true },
   faction: { type: String, enum: ['empire', 'rebel'], required: true },
@@ -63,7 +63,9 @@ const FleetSchema = new Schema({
   },
   ships: [{ type: ShipSchema, required: true }],
   squadrons: [SquadronSchema]
-}, { toJSON: { virtuals: true } })
+}, { toJSON: { virtuals: true }, toObject: { virtuals: true } })
+
+FleetSchema.virtual('player', { ref: 'User', localField: 'player', foreignField: 'sub', justOne: true })
 
 FleetSchema.virtual('shipTotal').get(function() {
   return sumBy(this.ships, 'points') || 0

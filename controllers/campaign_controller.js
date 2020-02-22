@@ -4,7 +4,7 @@ const map = require('lodash/map')
 
 exports.index = async (req, res, next) => {
   const query = { $or: [
-    { user: req.user.id },
+    { user: req.user.sub },
     { factions: { $elemMatch: { grandAdmiral: req.user.id } } },
     { factions: { $elemMatch: { players: { $in: [req.user.id] } } } }
   ] }
@@ -24,7 +24,7 @@ exports.store = async (req, res, next) => {
     regions: item.fields.regions
   }))
 
-  const campaignData = {...req.body, user: req.user.id, systems: systems }
+  const campaignData = {...req.body, user: req.user.sub, systems: systems }
 
   const campaign = await Campaign.create(campaignData)
     .catch((err) => res.status(422).json(err))

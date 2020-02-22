@@ -3,6 +3,7 @@ const Schema = mongoose.Schema
 const ObjectId = mongoose.Schema.Types.ObjectId
 const get = require('lodash/get')
 const FleetSchema = require('./fleet-schema')
+const User = require('./user')
 
 const PlanetSchema = new Schema({
   name: { type: String, required: true },
@@ -22,8 +23,8 @@ const PlanetSchema = new Schema({
 
 const FactionSchema = new Schema({
   name: { type: String },
-  grandAdmiral: { type: String, required: true, index: true },
-  players: [{ type: String, required: true, index: true }],
+  grandAdmiral: { type: ObjectId, ref: 'User', required: true, index: true },
+  players: [{ type: ObjectId, ref: 'User', required: true, index: true }],
   points: {
     act: { type: Number, default: 0 },
     total: { type: Number, default: 0 }
@@ -41,18 +42,21 @@ const FactionSchema = new Schema({
 })
 
 const CampaignSchema = new Schema({
-  user: { type: String, required: true, index: true },
   name: { type: String, required: true },
   empire: { type: FactionSchema, required: true },
   rebels: { type: FactionSchema, required: true },
   systems: [{ type: PlanetSchema, required: true }],
   act: { type: Number, default: 1 },
   turn: { type: Number, default: 1 }
-}, { timestamps: true, toJSON: { virtuals: true } })
+}, {
+  timestamps: true,
+  toObject: { virtuals: true },
+  toJSON: { virtuals: true }
+})
 
 CampaignSchema.virtual('playerCount').get(function() {
-  return get(this, 'rebels.players', []).length
-    + get(this, 'empire.players', []).length
+  return get(this, 'rebels.players', []).length + get(this, 'empire.players', []).length
 })
+CampaignSchema.virtual('user', { ref: 'User', localField: 'user', foreignField: 'sub', justOne: true })
 
 module.exports = mongoose.model('Campaign', CampaignSchema)
