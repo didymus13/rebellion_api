@@ -40,7 +40,7 @@ const FleetSchema = new Schema({
   // player: { type: String, required: true, index: true },
   campaign: { type: ObjectId, ref: 'Campaign', required: true, index: true },
   name: { type: String, required: true },
-  faction: { type: String, enum: ['empire', 'rebel'], required: true },
+  faction: { type: String, enum: ['empire', 'rebel'], required: true, index: true },
   condition: { type: String, default: null },
   objectives: {
     assault: { type: String, required: true },
