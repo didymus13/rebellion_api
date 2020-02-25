@@ -1,5 +1,8 @@
-const Router = require('express').Router()
+const Router = require('express').Router({ mergeParams: true })
 const FleetController = require('../../../controllers/fleet_controller')
+
+Router.route('/')
+  .post((req, res, next) => FleetController.store(req, res, next))
 
 Router.route('/:fleetId')
   .get((req, res, next) => FleetController.show(req, res, next))
