@@ -23,18 +23,21 @@ exports.store = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
+    const user = await User.findOne({ sub: req.user.sub })
+    if (!user) return res.status(404).json('Not found')
+
     const campaign = await Campaign.findOne({
       _id: req.params.id,
-      [`${req.params.faction}.fleets._id`]: req.params.fleetId
+      [`${req.params.faction}.fleets._id`]: req.params.fleetId,
+      [`${req.params.faction}.fleets.player`]: user._id
     })
     if (!campaign) return res.status(404).json('Not found')
     const fleet = campaign[req.params.faction].fleets.id(req.params.fleetId)
-
-    if (!can('update:fleet', req.user, fleet.player)) return res.status(403).json('Forbidden')
-    fleet.update(req.body)
+    fleet.set(req.body)
     await campaign.save()
     return res.json(fleet)
   } catch (err) {
+    console.log(err)
     return res.status(500).json(err)
   }
 }
