@@ -42,12 +42,13 @@ const FactionSchema = new Schema({
 })
 
 const CampaignSchema = new Schema({
+  user: { type: String, required: true, index: true },
   name: { type: String, required: true },
   empire: { type: FactionSchema, required: true },
   rebels: { type: FactionSchema, required: true },
   systems: [{ type: PlanetSchema, required: true }],
   act: { type: Number, default: 1 },
-  turn: { type: Number, default: 1 }
+  turn: { type: Number, default: 1 },
 }, {
   timestamps: true,
   toObject: { virtuals: true },
@@ -57,6 +58,5 @@ const CampaignSchema = new Schema({
 CampaignSchema.virtual('playerCount').get(function() {
   return get(this, 'rebels.players', []).length + get(this, 'empire.players', []).length
 })
-CampaignSchema.virtual('user', { ref: 'User', localField: 'user', foreignField: 'sub', justOne: true })
 
 module.exports = mongoose.model('Campaign', CampaignSchema)
