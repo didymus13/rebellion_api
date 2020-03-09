@@ -1,14 +1,19 @@
 const User = require('../models/user')
+const can = require('../middleware/can')
 
 exports.syncProfile = async (req, res, next) => {
   try {
-    const user = await User.findOneAndUpdate(
+    const user = await User.findOne({ sub: req.user.sub })
+    // If user exists, check if the authUser can update it
+    if (user && can('user:update', req.user, user._id)) return res.status(403)
+    const updatedUser = await User.findOneAndUpdate(
       { sub: req.user.sub },
       req.body,
       { upsert: true, new: true }
     )
-    return res.status(200).json(user)
+    return res.status(200).json(updatedUser)
   } catch (err) {
+    console.log(err)
     return res.status(500).json(err)
   }
 }
