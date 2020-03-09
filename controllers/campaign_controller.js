@@ -1,13 +1,6 @@
 const Campaign = require('../models/campaign')
 const map = require('lodash/map')
-const indexOf = require('lodash/indexOf')
-
-// Check campaign Permissions
-const can = function(permission, user, owner) {
-  if (!user) return false
-  if (indexOf(user.permissions, `${permission}:any`) > -1) return true
-  return user.sub === owner
-}
+const can = require('../middleware/can')
 
 exports.index = async (req, res, next) => {
   const query = { $or: [
