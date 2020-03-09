@@ -28,8 +28,10 @@ exports.show = async (req, res, next) => {
     const campaign = await Campaign.findById(req.params.id)
       .populate('empire.grandAdmiral')
       .populate('empire.players')
+      .populate('empire.fleets.player')
       .populate('rebels.grandAdmiral')
       .populate('rebels.players')
+      .populate('rebels.fleets.player')
     if (!campaign) return res.status(404).json('Not found')
     return res.json(campaign)
   } catch(err) {
