@@ -13,23 +13,13 @@ exports.index = async (req, res, next) => {
 }
 
 exports.store = async (req, res, next) => {
+  const systems = require('../config/seed/StarSystems.json')
   try {
-    const { items } = await client.getEntries({
-      content_type: 'rebellionSystem',
-      order: 'sys.createdAt'
-    })
-      .catch((err) => res.status(500).json(err))
-
-    const systems = map(items, (item) => ({
-      name: item.fields.name,
-      regions: item.fields.regions
-    }))
-
-    const campaignData = {...req.body, user: req.user.sub, systems: systems }
+    const campaignData = {...req.body, systems, user: req.user.sub }
     const campaign = await Campaign.create(campaignData)
     return res.status(201).json(campaign)
   } catch (err) {
-    return res.status(500).json(campaign)
+    return res.status(500).json(err)
   }
 }
 
