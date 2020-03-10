@@ -10,4 +10,6 @@ Router.route('/:id')
   .put((req, res, next) => CampaignController.update(req, res, next))
   .delete((req, res, next) => CampaignController.destroy(req, res, next))
 
+Router.use('/:id/:faction/fleets', require('./fleets'))
+
 module.exports = Router

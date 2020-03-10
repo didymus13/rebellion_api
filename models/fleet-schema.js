@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const ObjectId = mongoose.Schema.Types.ObjectId
 const Campaign = require('./campaign')
+const User = require('./user')
 const sumBy = require('lodash/sumBy')
 
 const BattleSchema = new Schema({
@@ -37,10 +38,8 @@ const SquadronSchema = new Schema({
 })
 
 const FleetSchema = new Schema({
-  // player: { type: String, required: true, index: true },
-  campaign: { type: ObjectId, ref: 'Campaign', required: true, index: true },
+  player: { type: ObjectId, ref: 'User', index: true, required: true },
   name: { type: String, required: true },
-  faction: { type: String, enum: ['empire', 'rebel'], required: true, index: true },
   condition: { type: String, default: null },
   objectives: {
     assault: { type: String, required: true },
@@ -64,8 +63,6 @@ const FleetSchema = new Schema({
   ships: [{ type: ShipSchema, required: true }],
   squadrons: [SquadronSchema]
 }, { toJSON: { virtuals: true }, toObject: { virtuals: true } })
-
-FleetSchema.virtual('player', { ref: 'User', localField: 'player', foreignField: 'sub', justOne: true })
 
 FleetSchema.virtual('shipTotal').get(function() {
   return sumBy(this.ships, 'points') || 0

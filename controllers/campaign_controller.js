@@ -28,9 +28,11 @@ exports.show = async (req, res, next) => {
     const campaign = await Campaign.findById(req.params.id)
       .populate('empire.grandAdmiral')
       .populate('empire.players')
+      .populate('empire.fleets.player')
       .populate('rebels.grandAdmiral')
       .populate('rebels.players')
-    if (!campaign) return res.status(404)
+      .populate('rebels.fleets.player')
+    if (!campaign) return res.status(404).json('Not found')
     return res.json(campaign)
   } catch(err) {
     return res.status(500).json(err)
@@ -40,7 +42,7 @@ exports.show = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   try {
     const campaign = await Campaign.findById(req.params.id)
-    if (!campaign) return res.status(404)
+    if (!campaign) return res.status(404).json('Not found')
     if (!can('update:campaign', req.user, campaign.user)) return res.status(403)
     const updatedCampaign = await Campaign.findByIdAndUpdate(req.params.id, req.body, { new: true })
     return res.json(updatedCampaign)
@@ -52,7 +54,7 @@ exports.update = async (req, res, next) => {
 exports.destroy = async (req, res, next) => {
   try {
     const campaign = await Campaign.findById(req.params.id)
-    if (!campaign) return res.status(404)
+    if (!campaign) return res.status(404).json('Not found')
     if (!can('delete:campaign', req.user, campaign.user)) return res.status(403)
     await Campaign.findByIdAndDelete(req.params.id)
     return res.status(204).json(null)
