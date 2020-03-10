@@ -26,16 +26,16 @@ exports.update = async (req, res, next) => {
     const user = await User.findOne({ sub: req.user.sub })
     if (!user) return res.status(404).json('Not found')
 
-    const campaign = await Campaign.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        [`${req.params.faction}.fleets._id`]: req.params.fleetId,
-        [`${req.params.faction}.fleets.player`]: user._id
-      },
-      { $set: { [`${req.params.faction}.fleets.$`]: req.body } },
-      { new: true }
-    )
+    const campaign = await Campaign.findOne({
+      _id: req.params.id,
+      [`${req.params.faction}.fleets._id`]: req.params.fleetId,
+      [`${req.params.faction}.fleets.player`]: user._id
+    })
     if (!campaign) return res.status(404).json('Not found')
+    const fleets = campaign[req.params.faction].fleets
+    const fleet = fleets.id(req.params.fleetId)
+    fleet.set(req.body)
+    await campaign.save()
     return res.json(campaign)
   } catch (err) {
     return res.status(500).json(err)
